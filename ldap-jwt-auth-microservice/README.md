@@ -106,11 +106,27 @@ Compose 会创建以下开发数据库：
 
 数据库数据保存在 Docker 卷 `wonderbank-pgdata` 中，容器重启后不会丢失。
 
-### 2. 启动应用
+### 2. 配置 JWT 密钥并启动应用
 
-```bash
+JWT 密钥不再提供默认值，启动前必须设置 `JWT_SECRET`。以下示例生成 64 字节随机密钥。
+
+**Windows PowerShell：**
+
+```powershell
+$bytes = New-Object byte[] 64
+[Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($bytes)
+$env:JWT_SECRET = [BitConverter]::ToString($bytes).Replace('-', '')
 mvn spring-boot:run
 ```
+
+**Linux / macOS / Git Bash（需要 OpenSSL）：**
+
+```bash
+export JWT_SECRET="$(openssl rand -hex 64 | tr -d '\r\n')"
+mvn spring-boot:run
+```
+
+环境变量只对当前终端及其启动的进程生效；重新打开终端后需要重新设置。
 
 应用默认监听 `http://localhost:8080`。启动时会自动：
 
@@ -136,7 +152,7 @@ http://localhost:8080/
 
 | 配置项 | 默认值 | 说明 |
 | --- | --- | --- |
-| `jwt.secret` | 项目内置开发密钥 | JWT HMAC 签名密钥 |
+| `jwt.secret` | 无，必须通过 `JWT_SECRET` 提供 | JWT HMAC 签名密钥，建议使用至少 32 字节的随机值 |
 | `spring.datasource.url` | `jdbc:postgresql://localhost:15435/wonderbankdb` | PostgreSQL 连接地址 |
 | `spring.datasource.username` | `cdbdev` | 数据库用户名 |
 | `spring.datasource.password` | `dbdev123` | 数据库密码 |
@@ -148,22 +164,18 @@ http://localhost:8080/
 | `spring.ldap.embedded.port` | `389` | 内嵌 LDAP 端口 |
 | `spring.ldap.embedded.ldif` | `classpath:ldap-demo.ldif` | LDAP 初始化文件 |
 
-可以使用 Spring Boot 环境变量覆盖默认配置，例如：
+数据库等配置也可以通过 Spring Boot 环境变量覆盖，例如：
 
 ```bash
-export JWT_SECRET='replace-with-a-long-random-secret'
 export SPRING_DATASOURCE_URL='jdbc:postgresql://localhost:15435/wonderbankdb'
 export SPRING_DATASOURCE_USERNAME='cdbdev'
 export SPRING_DATASOURCE_PASSWORD='dbdev123'
-mvn spring-boot:run
 ```
 
 Windows PowerShell 示例：
 
 ```powershell
-$env:JWT_SECRET = 'replace-with-a-long-random-secret'
 $env:SPRING_DATASOURCE_PASSWORD = 'dbdev123'
-mvn spring-boot:run
 ```
 
 ## API 使用说明

@@ -18,22 +18,45 @@
 
 ## 快速开始
 
-### 方式一：一键脚本（Windows，推荐）
+环境要求：JDK 17+、Maven 3.8+、Docker Desktop 和 Docker Compose。
 
-首次需先打出 jar 包：
+### 1. 配置 JWT 密钥
 
-```bash
-mvn package -DskipTests
+HS512 要求密钥至少为 64 字节。应用不再提供默认密钥，启动前必须设置 `APP_JWT_SECRET`。
+
+**Windows PowerShell：**
+
+```powershell
+$bytes = New-Object byte[] 64
+[Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($bytes)
+$env:APP_JWT_SECRET = [BitConverter]::ToString($bytes).Replace('-', '')
 ```
 
-之后日常启停直接用脚本：
+**Linux / macOS / Git Bash（需要 OpenSSL）：**
 
-- **双击 `scripts\start.bat`**：启动 Docker 容器 → 等 OpenLDAP 就绪 → 自动导入种子数据 → 停掉旧应用进程 → 后台启动应用 → 等待就绪后打印访问入口
-- **双击 `scripts\stop.bat`**：停止应用进程和全部容器（LDAP 数据保留在 `data\slapd\`，下次启动自动恢复）
+```bash
+export APP_JWT_SECRET="$(openssl rand -hex 64 | tr -d '\r\n')"
+```
 
-### 方式二：手动启动
+环境变量只对当前终端及其启动的进程生效。使用一键脚本时，也必须在已设置该变量的同一个终端中执行脚本。
 
-#### 1. 启动 OpenLDAP（含种子数据自动导入）
+### 2. 选择启动方式
+
+#### 方式一：一键脚本（Windows，推荐）
+
+首次需先打出 JAR 包，然后在已配置环境变量的 PowerShell 或 CMD 中执行：
+
+```powershell
+mvn package -DskipTests
+.\scripts\start.bat
+```
+
+- `scripts\start.bat`：启动 Docker 容器 → 等 OpenLDAP 就绪 → 自动导入种子数据 → 停掉旧应用进程 → 后台启动应用 → 等待就绪后打印访问入口
+- `scripts\stop.bat`：停止应用进程和全部容器（LDAP 数据保留在 `data\slapd\`，下次启动自动恢复）
+
+#### 方式二：手动启动
+
+先启动 OpenLDAP（含种子数据自动导入）：
 
 ```bash
 docker compose up -d
@@ -48,7 +71,7 @@ docker compose up -d
 
 另外有一个一次性的 `seed` 容器：等 OpenLDAP 健康检查后执行 `ldapadd` 导入 `data/bootstrap/seed.ldif`，然后自动退出（`Exited (0)` 是正常状态）。导入是**幂等**的——每次 `compose up` 都会执行，但只有数据库为空时真正写入。
 
-#### 2. 启动应用
+再构建并启动应用：
 
 ```bash
 mvn package -DskipTests

@@ -16,9 +16,27 @@
 
 ## 快速开始
 
+环境要求：JDK 17+。项目附带 Maven Wrapper，无需单独安装 Maven。
+
+JWT 密钥不再提供默认值，启动前必须通过 `JWT_SECRET` 设置。建议使用至少 32 字节的随机密钥；以下示例生成 64 字节随机值。
+
+**Windows PowerShell：**
+
+```powershell
+$bytes = New-Object byte[] 64
+[Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($bytes)
+$env:JWT_SECRET = [BitConverter]::ToString($bytes).Replace('-', '')
+.\mvnw.cmd spring-boot:run
+```
+
+**Linux / macOS / Git Bash（需要 OpenSSL）：**
+
 ```bash
+export JWT_SECRET="$(openssl rand -hex 64 | tr -d '\r\n')"
 ./mvnw spring-boot:run
 ```
+
+环境变量只对当前终端及其启动的进程生效；重新打开终端后需要重新设置。生产环境请使用密钥管理服务，不要将真实密钥写入源码或提交到 Git。
 
 访问 http://localhost:8080/ ，预置账号：
 

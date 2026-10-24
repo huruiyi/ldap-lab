@@ -6,12 +6,12 @@
 
 ```
 ldap/
-├── portal/                              # 工作区导航门户（Vite + Vue 3，纯静态）
+├── ldap-workspace-portal/                              # 工作区导航门户（Vite + Vue 3，纯静态）
 ├── spring-security-ldap/                # ① Spring Security + 内嵌 LDAP（教程改造）
 ├── ldap-jwt-auth-microservice/          # ② LDAP + JWT 微服务（PostgreSQL 双写）
 ├── ldap-auth-service/                   # ③ LDAP 认证服务整合版（UI + JWT + 权限组）
 ├── spring-boot-user-management-ldap/    # ④ 外部 OpenLDAP 用户管理（Docker）
-└── oauth-demo/                          # ⑤ OAuth2 授权服务器（最新技术栈 + Vue3 前端）
+└── spring-boot-4-oauth-demo/                          # ⑤ OAuth2 授权服务器（最新技术栈 + Vue3 前端）
 ```
 
 ## 项目对比总览
@@ -22,7 +22,7 @@ ldap/
 | `ldap-jwt-auth-microservice` | JWT 微服务 | Boot 3.3 · jjwt · PostgreSQL | 内嵌（389）+ 数据库双写 | 8080 | 无（纯 REST） |
 | `ldap-auth-service` | 整合版认证服务 | Boot 3.2 · 内嵌 LDAP · 自研 JWT | 内嵌（8389） | 8080 | Thymeleaf UI |
 | `spring-boot-user-management-ldap` | 外部 LDAP 对接 | Boot 3.4 · jjwt · Docker OpenLDAP | 外部容器（389） | 1064 | 静态 HTML |
-| `oauth-demo` | OAuth2 授权服务器 | Boot 4.1 · Authorization Server 7.1 · MyBatis-Plus | —（PostgreSQL） | 9000 | Vite + Vue 3 |
+| `spring-boot-4-oauth-demo` | OAuth2 授权服务器 | Boot 4.1 · Authorization Server 7.1 · MyBatis-Plus | —（PostgreSQL） | 9000 | Vite + Vue 3 |
 
 三种 LDAP 集成方式全部覆盖：**内嵌 UnboundID**、**外部 OpenLDAP（Docker）**、**数据库双写**。
 
@@ -35,7 +35,7 @@ ldap-jwt-auth-microservice    演进为 JWT 微服务，引入 PostgreSQL 双写
         ↓
 ldap-auth-service             整合版：UI + JWT 签发 + 权限组管理一体化
         ↓
-oauth-demo                    迈向标准 OAuth2 / OIDC 授权服务器
+spring-boot-4-oauth-demo                    迈向标准 OAuth2 / OIDC 授权服务器
 ```
 
 ---
@@ -114,7 +114,7 @@ scripts\start.bat           # Windows 一键启动（含容器与应用）
 # 应用 http://localhost:1064/ ，phpLDAPadmin http://localhost/
 ```
 
-### ⑤ oauth-demo —— OAuth2 授权服务器（最新技术栈）
+### ⑤ spring-boot-4-oauth-demo —— OAuth2 授权服务器（最新技术栈）
 
 由 `ldap-auth-service/legacy` 中的旧 OAuth2 代码现代化重写而来，全工作区技术栈最新。
 
@@ -125,7 +125,7 @@ scripts\start.bat           # Windows 一键启动（含容器与应用）
 - **运行**：
 
 ```bash
-cd oauth-demo
+cd spring-boot-4-oauth-demo
 docker compose up -d                  # 启动 PostgreSQL 16
 mvn spring-boot:run                   # 授权服务器 http://localhost:9000/
 
@@ -140,25 +140,54 @@ npm install && npm run dev            # 前端 http://localhost:5173/
 | 端口 | 用途 | 备注 |
 |---|---|---|
 | 8080 | `ldap-auth-service` / `spring-security-ldap` / `ldap-jwt-auth-microservice` | 三者同端口，同时只启动一个 |
-| 9000 | `oauth-demo` 授权服务器 | |
+| 9000 | `spring-boot-4-oauth-demo` 授权服务器 | |
 | 1064 | `spring-boot-user-management-ldap` | |
-| 5173 | `oauth-demo` 前端（Vite dev） | |
-| 5200 | `portal` 门户（Vite dev） | |
+| 5173 | `spring-boot-4-oauth-demo` 前端（Vite dev） | |
+| 5200 | `ldap-workspace-portal` 门户（Vite dev） | |
 | 8389 / 18889 / 389 | 各项目内嵌 / 外部 LDAP | 389 为外部 OpenLDAP 容器 |
-| 5433 / 15435 | PostgreSQL 容器 | oauth-demo / jwt-microservice |
+| 5433 / 15435 | PostgreSQL 容器 | spring-boot-4-oauth-demo / jwt-microservice |
 | 80 | phpLDAPadmin | 外部 OpenLDAP 的 Web 管理台 |
 
 ## 快速开始
 
 环境要求：**JDK 17+**、**Maven 3.8+**、**Docker Desktop**（②④⑤ 需要）、**Node.js 18+**（⑤ 前端与门户需要）。
 
-```bash
-# 1. 启动导航门户，总览所有项目
-cd portal
-npm install && npm run dev    # http://localhost:5200/
+### JWT 环境变量
 
-# 2. 挑一个项目，按其小节的说明启动体验
-cd spring-security-ldap && mvn spring-boot:run
+②③④ 不再内置 JWT 密钥，启动前必须设置对应变量：
+
+| 项目 | 环境变量 | 密钥要求 |
+| --- | --- | --- |
+| `ldap-jwt-auth-microservice` | `JWT_SECRET` | 至少 32 字节，建议 64 字节随机值 |
+| `ldap-auth-service` | `JWT_SECRET` | HS256，至少 32 字节 |
+| `spring-boot-user-management-ldap` | `APP_JWT_SECRET` | HS512，至少 64 字节 |
+
+**Windows PowerShell（生成 64 字节随机密钥）：**
+
+```powershell
+$bytes = New-Object byte[] 64
+[Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($bytes)
+$env:JWT_SECRET = [BitConverter]::ToString($bytes).Replace('-', '')
+$env:APP_JWT_SECRET = [BitConverter]::ToString($bytes).Replace('-', '')
 ```
 
-建议学习顺序：`spring-security-ldap` → `ldap-jwt-auth-microservice` → `ldap-auth-service` → `spring-boot-user-management-ldap` → `oauth-demo`。
+**Linux / macOS / Git Bash（需要 OpenSSL）：**
+
+```bash
+export JWT_SECRET="$(openssl rand -hex 64 | tr -d '\r\n')"
+export APP_JWT_SECRET="$(openssl rand -hex 64 | tr -d '\r\n')"
+```
+
+只需设置当前要启动的项目所对应的变量。变量仅在当前终端中有效，详细说明见各项目 README。
+
+### 启动导航门户
+
+```bash
+cd ldap-workspace-portal
+npm install
+npm run dev    # http://localhost:5200/
+```
+
+随后按照上方各项目小节进入对应目录并启动服务。注意②和③使用相同端口，④的一键脚本必须在已设置 `APP_JWT_SECRET` 的终端中运行。
+
+建议学习顺序：`spring-security-ldap` → `ldap-jwt-auth-microservice` → `ldap-auth-service` → `spring-boot-user-management-ldap` → `spring-boot-4-oauth-demo`。
