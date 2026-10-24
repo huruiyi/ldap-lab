@@ -1,0 +1,70 @@
+services:
+  openldap:
+    image: docker.m.daocloud.io/osixia/openldap:1.5.0
+    container_name: user-management-openldap
+    hostname: openldap
+    ports:
+      - "389:389"
+      - "636:636"
+    volumes:
+      - ./data/certificates:/container/service/slapd/assets/certs
+      - ./data/slapd/database:/var/lib/ldap
+      - ./data/slapd/config:/etc/ldap/slapd.d
+    environment:
+      - LDAP_ORGANISATION=springframework
+      - LDAP_DOMAIN=springframework.org
+      - LDAP_ADMIN_USERNAME=admin
+      - LDAP_ADMIN_PASSWORD=admin
+      - LDAP_CONFIG_PASSWORD=config
+      - "LDAP_BASE_DN=dc=springframework,dc=org"
+      - LDAP_TLS_CRT_FILENAME=server.crt
+      - LDAP_TLS_KEY_FILENAME=server.key
+      - LDAP_TLS_CA_CRT_FILENAME=springframework.org.ca.crt
+      - LDAP_READONLY_USER=true
+      - LDAP_READONLY_USER_USERNAME=user-ro
+      - LDAP_READONLY_USER_PASSWORD=ro_pass
+    # 健康检查供 seed 服务等待：LDAP 能应答查询才算就绪
+    healthcheck:
+      test: ["CMD", "ldapsearch", "-x", "-H", "ldap://localhost:389",
+             "-D", "cn=admin,dc=springframework,dc=org", "-w", "admin",
+             "-b", "dc=springframework,dc=org", "dn"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+    networks:
+      - openldap
+
+  # 种子数据导入：openldap 就绪后执行一次 ldapadd 然后退出。
+  # -c 忽略「条目已存在」错误 → 幂等，每次 compose up 都会跑但只有首次真正写入。
+  # 不直接用镜像自带的 bootstrap 机制：它的清理逻辑 rm -rf 会把挂载点/复制目标删掉，重启即崩。
+  seed:
+    image: docker.m.daocloud.io/osixia/openldap:1.5.0
+    container_name: user-management-openldap-seed
+    depends_on:
+      openldap:
+        condition: service_healthy
+    volumes:
+      - ./data/bootstrap/seed.ldif:/tmp/seed.ldif:ro
+    entrypoint: ["sh", "-c",
+      "ldapadd -c -x -H ldap://openldap:389 -D 'cn=admin,dc=springframework,dc=org' -w admin -f /tmp/seed.ldif || true"]
+    restart: "no"
+    networks:
+      - openldap
+
+  phpldapadmin:
+    image: docker.m.daocloud.io/osixia/phpldapadmin:latest
+    container_name: user-management-phpldapadmin
+    hostname: phpldapadmin
+    ports:
+      - "80:80"
+    environment:
+      - PHPLDAPADMIN_LDAP_HOSTS=openldap
+      - PHPLDAPADMIN_HTTPS=false
+    depends_on:
+      - openldap
+    networks:
+      - openldap
+
+networks:
+  openldap:
+    driver: bridge

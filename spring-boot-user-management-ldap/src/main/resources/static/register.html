@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>注册 - LDAP 用户管理</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <div class="logo">📝</div>
+    <h1>创建账号</h1>
+    <p class="subtitle">注册信息将写入 OpenLDAP 目录</p>
+
+    <div id="message" class="message"></div>
+
+    <form id="registerForm">
+      <div class="form-group">
+        <label for="uid">用户名</label>
+        <input type="text" id="uid" required autocomplete="username" placeholder="登录用户名（唯一）">
+      </div>
+      <div class="form-group">
+        <label for="fullName">名字</label>
+        <input type="text" id="fullName" required placeholder="First Name">
+      </div>
+      <div class="form-group">
+        <label for="lastName">姓氏</label>
+        <input type="text" id="lastName" required placeholder="Last Name">
+      </div>
+      <div class="form-group">
+        <label for="password">密码</label>
+        <input type="password" id="password" required minlength="6" autocomplete="new-password" placeholder="至少 6 位">
+      </div>
+      <div class="form-group">
+        <label for="confirmPassword">确认密码</label>
+        <input type="password" id="confirmPassword" required autocomplete="new-password" placeholder="再次输入密码">
+      </div>
+      <button type="submit" class="btn" id="submitBtn">注 册</button>
+    </form>
+
+    <div class="auth-link">已有账号？<a href="/login.html">直接登录</a></div>
+  </div>
+</div>
+<script src="/js/common.js"></script>
+<script src="/js/register.js"></script>
+</body>
+</html>

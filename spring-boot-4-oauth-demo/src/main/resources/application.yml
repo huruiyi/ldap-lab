@@ -1,0 +1,21 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: oauth-demo
+  datasource:
+    # PostgreSQL from docker-compose.yml (docker compose up -d)
+    # host port 5433 because a local PostgreSQL already occupies 5432
+    url: jdbc:postgresql://localhost:5433/oauthdb
+    username: oauth
+    password: oauth123
+  sql:
+    init:
+      mode: always
+      # schema.sql: SAS tables adapted for PostgreSQL (blob -> text) + app tables
+      schema-locations: classpath:schema.sql
+
+logging:
+  level:
+    org.springframework.security: INFO

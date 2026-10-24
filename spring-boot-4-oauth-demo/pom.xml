@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>4.1.1</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>com.demo</groupId>
+  <artifactId>oauth-demo</artifactId>
+  <version>1.0.0</version>
+  <name>oauth-demo</name>
+  <description>
+    OAuth2 authorization server + resource server demo, modernized from the legacy
+    spring-security-oauth2 code in ldap-auth-service/legacy
+  </description>
+
+  <properties>
+    <java.version>17</java.version>
+    <!-- Spring Authorization Server (aligned with Spring Security 7.1 / Boot 4.1) -->
+    <spring-authorization-server.version>7.1.1</spring-authorization-server.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <!-- custom login page for the authorization_code flow -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-thymeleaf</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+    <!-- spring-core 7 declares commons-logging as a compile dep, but the old
+         resolver in Maven 3.8 silently drops it; pin it explicitly so
+         SpringApplication's LogFactory is on the classpath -->
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+    </dependency>
+    <!-- the modern replacement for @EnableAuthorizationServer (spring-security-oauth2) -->
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-oauth2-authorization-server</artifactId>
+      <version>${spring-authorization-server.version}</version>
+    </dependency>
+    <!-- the modern replacement for @EnableResourceServer -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+    </dependency>
+    <!-- JDBC-backed client / token stores, like the legacy JdbcTokenStore -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-jdbc</artifactId>
+    </dependency>
+    <!-- MyBatis-Plus for application data (users / permission groups) -->
+    <dependency>
+      <groupId>com.baomidou</groupId>
+      <artifactId>mybatis-plus-spring-boot4-starter</artifactId>
+      <version>3.5.17</version>
+    </dependency>
+    <!-- ServiceImpl / IService CRUD helpers live in the extension module,
+         which the boot4 starter does not pull in -->
+    <dependency>
+      <groupId>com.baomidou</groupId>
+      <artifactId>mybatis-plus-extension</artifactId>
+      <version>3.5.17</version>
+    </dependency>
+    <!-- primary database (see docker-compose.yml) -->
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- fallback for the 'h2' profile when Docker/Postgres is not available -->
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>

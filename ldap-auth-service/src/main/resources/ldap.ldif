@@ -1,0 +1,65 @@
+# 本文件由「固化」功能自动生成，可手工编辑，启动时整文件导入内嵌 LDAP
+
+dn: dc=example,dc=com
+objectclass: top
+objectclass: domain
+objectclass: extensibleObject
+dc: example
+
+dn: ou=users,dc=example,dc=com
+objectclass: top
+objectclass: organizationalUnit
+ou: users
+
+dn: ou=groups,dc=example,dc=com
+objectclass: top
+objectclass: organizationalUnit
+ou: groups
+
+
+dn: cn=admin,ou=users,dc=example,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: admin
+sn: admin
+uid: admin
+userPassword: admin
+
+dn: cn=demo,ou=users,dc=example,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: demo
+sn: demo
+uid: demo
+userPassword: demo
+
+dn: cn=huruiyi,ou=users,dc=example,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: huruiyi
+sn: 胡
+givenName: 睿毅
+uid: huruiyi
+mail: huruiyi@example.com
+userPassword: changeMe
+
+dn: cn=admin,ou=groups,dc=example,dc=com
+objectclass: top
+objectclass: groupOfNames
+cn: admin
+member: cn=admin,ou=users,dc=example,dc=com
+member: cn=huruiyi,ou=users,dc=example,dc=com
+
+dn: cn=user,ou=groups,dc=example,dc=com
+objectclass: top
+objectclass: groupOfNames
+cn: user
+member: cn=admin,ou=users,dc=example,dc=com
+member: cn=demo,ou=users,dc=example,dc=com
+member: cn=huruiyi,ou=users,dc=example,dc=com

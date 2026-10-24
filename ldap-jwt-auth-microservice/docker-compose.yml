@@ -1,0 +1,24 @@
+# 与 application.properties 对齐：jdbc:postgresql://localhost:15435/wonderbankdb
+# 宿主机 5432 常被本机 PostgreSQL 占用，映射到 15435
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ldap-jwt-auth-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: cdbdev
+      POSTGRES_PASSWORD: dbdev123
+      POSTGRES_DB: wonderbankdb
+    ports:
+      - "15435:5432"
+    volumes:
+      - wonderbank-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U cdbdev -d wonderbankdb" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  wonderbank-pgdata:
+    name: wonderbank-pgdata

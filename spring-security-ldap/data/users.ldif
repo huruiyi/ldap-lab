@@ -1,0 +1,69 @@
+# 本文件由「固化」功能自动生成，可手工编辑，启动时整文件导入内嵌 LDAP
+
+dn: ou=groups,dc=baeldung,dc=com
+objectclass: top
+objectclass: organizationalUnit
+ou: groups
+
+dn: ou=people,dc=baeldung,dc=com
+objectclass: top
+objectclass: organizationalUnit
+ou: people
+
+
+dn: uid=admin,ou=people,dc=baeldung,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: Directory Admin
+sn: Admin
+uid: admin
+userPassword: adminpass
+
+dn: uid=baeldung,ou=people,dc=baeldung,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: Jim Beam
+sn: Beam
+uid: baeldung
+userPassword: password
+
+dn: uid=persist1,ou=people,dc=baeldung,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: persist1
+sn: persist1
+uid: persist1
+mail: p1@example.com
+userPassword: keep1234
+
+dn: uid=persist2,ou=people,dc=baeldung,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: persist2
+sn: persist2
+uid: persist2
+userPassword: keep5678
+
+dn: cn=admin,ou=groups,dc=baeldung,dc=com
+objectclass: top
+objectclass: groupOfNames
+cn: admin
+member: uid=admin,ou=people,dc=baeldung,dc=com
+member: uid=persist1,ou=people,dc=baeldung,dc=com
+member: uid=persist2,ou=people,dc=baeldung,dc=com
+
+dn: cn=user,ou=groups,dc=baeldung,dc=com
+objectclass: top
+objectclass: groupOfNames
+cn: user
+member: uid=baeldung,ou=people,dc=baeldung,dc=com
+member: uid=persist1,ou=people,dc=baeldung,dc=com
+member: uid=persist2,ou=people,dc=baeldung,dc=com

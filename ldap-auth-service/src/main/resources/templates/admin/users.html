@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>用户管理 · LDAP Auth Service</title>
+<link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+  <div class="navbar">
+    <div class="navbar-inner">
+      <a class="brand" th:href="@{/}">🔐 LDAP Auth Service</a>
+      <div class="nav">
+        <a th:href="@{/}">首页</a>
+        <a th:href="@{/admin/users}" class="active">用户管理</a>
+        <a th:href="@{/admin/groups}">权限组管理</a>
+      </div>
+      <div class="nav-right">
+        <form th:action="@{/logout}" method="post">
+          <button type="submit">退出登录</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <div class="card-head">
+        <h2>👥 用户管理</h2>
+        <button type="button" class="inline" data-modal="createModal">＋ 新建用户</button>
+      </div>
+
+      <div class="msg ok" th:if="${ok}" th:text="${ok}"></div>
+      <div class="msg err" th:if="${err}" th:text="${err}"></div>
+
+      <table class="data">
+        <thead>
+          <tr>
+            <th>用户名</th>
+            <th>姓名</th>
+            <th>邮箱</th>
+            <th>角色</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="user : ${users}">
+            <td class="mono" th:text="${user.username}">admin</td>
+            <td>
+              <span th:if="${!#strings.isEmpty(user.fullName)}" th:text="${user.fullName}">胡瑞</span>
+              <span th:if="${#strings.isEmpty(user.fullName)}" class="muted">—</span>
+            </td>
+            <td>
+              <span th:if="${!#strings.isEmpty(user.email)}" th:text="${user.email}">a@b.com</span>
+              <span th:if="${#strings.isEmpty(user.email)}" class="muted">—</span>
+            </td>
+            <td>
+              <span class="badge warn" th:if="${user.admin}">ADMIN</span>
+              <span class="badge ok">USER</span>
+            </td>
+            <td>
+              <div class="row-actions">
+                <button type="button" class="inline" th:data-modal="${'editModal-' + user.username}">编辑</button>
+                <button type="button" class="inline" th:if="${user.username != 'admin'}"
+                        th:data-modal="${'resetModal-' + user.username}">重置密码</button>
+                <button type="button" class="inline danger" th:if="${user.username != 'admin'}"
+                        th:data-modal="${'deleteModal-' + user.username}">删除</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 新建用户弹框 -->
+  <div class="modal-mask" id="createModal">
+    <div class="modal">
+      <div class="modal-head">
+        <h2>➕ 新建用户</h2>
+        <button type="button" class="popup-close" data-close="createModal">×</button>
+      </div>
+      <p class="muted" style="margin-bottom:4px">由管理员直接创建，自动加入 user 组，可立即登录</p>
+      <form th:action="@{/admin/users/create}" method="post">
+        <div class="form-grid">
+          <div>
+            <label>用户名 *</label>
+            <input type="text" name="username" required />
+          </div>
+          <div>
+            <label>密码 *（至少 4 位）</label>
+            <input type="password" name="password" required minlength="4" />
+          </div>
+          <div>
+            <label>名字</label>
+            <input type="text" name="firstName" />
+          </div>
+          <div>
+            <label>姓氏</label>
+            <input type="text" name="lastName" />
+          </div>
+          <div>
+            <label>邮箱</label>
+            <input type="email" name="email" />
+          </div>
+        </div>
+        <button type="submit">创建用户</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 每个用户一个编辑弹框 -->
+  <div class="modal-mask" th:each="user : ${users}" th:id="${'editModal-' + user.username}">
+    <div class="modal">
+      <div class="modal-head">
+        <h2>✏️ 编辑用户：<span class="mono" th:text="${user.username}">admin</span></h2>
+        <button type="button" class="popup-close" th:data-close="${'editModal-' + user.username}">×</button>
+      </div>
+      <form th:action="@{/admin/users/update}" method="post">
+        <input type="hidden" name="username" th:value="${user.username}" />
+        <label>用户名</label>
+        <input type="text" name="newUsername" th:value="${user.username}"
+               th:readonly="${user.username == 'admin'}" required />
+        <label>名字</label>
+        <input type="text" name="firstName" th:value="${user.firstName}" />
+        <label>姓氏</label>
+        <input type="text" name="lastName" th:value="${user.lastName}" />
+        <label>邮箱</label>
+        <input type="email" name="email" th:value="${user.email}" />
+        <button type="submit">保存修改</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 每个用户一个重置密码弹框 -->
+  <div class="modal-mask" th:each="user : ${users}" th:if="${user.username != 'admin'}"
+       th:id="${'resetModal-' + user.username}">
+    <div class="modal">
+      <div class="modal-head">
+        <h2>🔑 重置密码：<span class="mono" th:text="${user.username}">demo</span></h2>
+        <button type="button" class="popup-close" th:data-close="${'resetModal-' + user.username}">×</button>
+      </div>
+      <form th:action="@{/admin/users/reset-password}" method="post" class="reset-form">
+        <input type="hidden" name="username" th:value="${user.username}" />
+        <label>新密码 *（至少 4 位）</label>
+        <input type="password" name="password" required minlength="4" autocomplete="new-password" />
+        <label>确认新密码 *</label>
+        <input type="password" name="confirmPassword" required minlength="4" autocomplete="new-password" />
+        <div class="msg err pwd-mismatch" style="display:none">两次输入的密码不一致</div>
+        <button type="submit">确认重置</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 每个用户一个删除确认弹框 -->
+  <div class="modal-mask" th:each="user : ${users}" th:if="${user.username != 'admin'}"
+       th:id="${'deleteModal-' + user.username}">
+    <div class="modal modal-sm">
+      <div class="modal-head">
+        <h2>🗑️ 删除用户</h2>
+        <button type="button" class="popup-close" th:data-close="${'deleteModal-' + user.username}">×</button>
+      </div>
+      <p class="muted" style="margin-bottom:6px">
+        确认删除用户 <span class="mono" th:text="${user.username}">demo</span>？<br>
+        该操作会同时将其移出所有权限组，且<strong>不可恢复</strong>。
+      </p>
+      <form th:action="@{/admin/users/delete}" method="post" class="confirm-actions">
+        <input type="hidden" name="username" th:value="${user.username}" />
+        <button type="button" class="btn-cancel" th:data-close="${'deleteModal-' + user.username}">取消</button>
+        <button type="submit" class="btn-confirm-danger">确认删除</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function openModal(id) { document.getElementById(id).classList.add('show'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+    // 打开弹框（data-modal 属性驱动，规避 Thymeleaf 事件处理器限制）
+    document.querySelectorAll('[data-modal]').forEach(function (btn) {
+      btn.addEventListener('click', function () { openModal(btn.dataset.modal); });
+    });
+    // 关闭按钮
+    document.querySelectorAll('[data-close]').forEach(function (btn) {
+      btn.addEventListener('click', function () { closeModal(btn.dataset.close); });
+    });
+    // 点击遮罩空白处关闭
+    document.querySelectorAll('.modal-mask').forEach(function (mask) {
+      mask.addEventListener('click', function (e) {
+        if (e.target === mask) mask.classList.remove('show');
+      });
+    });
+    // Esc 关闭所有弹框
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-mask.show').forEach(function (m) { m.classList.remove('show'); });
+      }
+    });
+    // 重置密码弹框：两次输入一致性校验
+    document.querySelectorAll('.reset-form').forEach(function (form) {
+      form.addEventListener('submit', function (e) {
+        var pwd = form.querySelector('[name="password"]').value;
+        var confirm = form.querySelector('[name="confirmPassword"]').value;
+        var tip = form.querySelector('.pwd-mismatch');
+        if (pwd !== confirm) {
+          e.preventDefault();
+          tip.style.display = 'block';
+        } else {
+          tip.style.display = 'none';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

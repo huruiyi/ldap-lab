@@ -1,0 +1,184 @@
+/* ========== LDAP Auth Service · 浅色主题 ========== */
+:root {
+  --bg: #f1f5f9;
+  --card: #ffffff;
+  --card-border: #e2e8f0;
+  --text: #1e293b;
+  --muted: #64748b;
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --success: #16a34a;
+  --error: #dc2626;
+  --mono: "JetBrains Mono", Consolas, "Courier New", monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+.container { max-width: 960px; margin: 0 auto; padding: 0 16px 32px; }
+.container.narrow { max-width: 440px; }
+
+/* ---------- 顶部导航 ---------- */
+.navbar {
+  background: var(--card);
+  border-bottom: 1px solid var(--card-border);
+  margin-bottom: 32px;
+}
+.navbar-inner {
+  max-width: 960px; margin: 0 auto; padding: 0 16px;
+  display: flex; align-items: center; gap: 24px; height: 56px;
+}
+.navbar .brand { font-weight: 700; font-size: 15px; color: var(--text); text-decoration: none; }
+.navbar .nav { display: flex; gap: 4px; flex: 1; }
+.navbar .nav a {
+  padding: 7px 14px; border-radius: 8px; font-size: 14px;
+  color: var(--muted); text-decoration: none; transition: all .15s;
+}
+.navbar .nav a:hover { color: var(--text); background: #eef2ff; }
+.navbar .nav a.active { color: var(--primary); background: #eef2ff; font-weight: 600; }
+.navbar .nav-right { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--muted); }
+.navbar .nav-right form { margin: 0; }
+.navbar .nav-right button {
+  display: inline-block; width: auto; margin-top: 0; padding: 6px 14px;
+  font-size: 13px; background: #f1f5f9; color: var(--text); border: 1px solid var(--card-border);
+}
+.navbar .nav-right button:hover { background: #e2e8f0; }
+
+/* ---------- 卡片 ---------- */
+.card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 28px 24px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, .06);
+}
+.card h2 { font-size: 17px; margin-bottom: 18px; }
+.muted { color: var(--muted); font-size: 14px; line-height: 1.8; }
+
+/* ---------- 表单 ---------- */
+label { display: block; font-size: 13px; color: var(--muted); margin: 12px 0 5px; }
+input {
+  width: 100%; padding: 10px 12px; border-radius: 8px;
+  border: 1px solid #cbd5e1; background: #fff; color: var(--text);
+  font-size: 14px; outline: none; transition: border-color .2s, box-shadow .2s;
+}
+input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, .12); }
+button, .btn, input[type="submit"] {
+  display: block; width: 100%; margin-top: 18px; padding: 11px; border: none; border-radius: 8px;
+  background: var(--primary); color: #fff; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: background .2s; text-decoration: none; text-align: center;
+}
+button:hover, .btn:hover, input[type="submit"]:hover { background: var(--primary-hover); }
+button.inline { display: inline-block; width: auto; margin-top: 0; padding: 6px 14px; font-size: 12px; }
+button.danger { background: #fee2e2; color: var(--error); }
+button.danger:hover { background: #fecaca; }
+
+/* ---------- 消息提示 ---------- */
+.msg { margin: 0 0 14px; padding: 10px 12px; border-radius: 8px; font-size: 13px; }
+.msg.ok { background: #f0fdf4; color: var(--success); border: 1px solid #bbf7d0; }
+.msg.err { background: #fef2f2; color: var(--error); border: 1px solid #fecaca; }
+
+/* ---------- 信息展示 ---------- */
+.kv { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed #e2e8f0; font-size: 14px; }
+.kv:last-of-type { border-bottom: none; }
+.kv .k { color: var(--muted); }
+.kv .v { font-family: var(--mono); color: var(--text); text-align: right; word-break: break-all; }
+.role-tag { display: inline-block; padding: 1px 8px; border-radius: 6px; font-size: 12px; background: #eef2ff; color: var(--primary); border: 1px solid #c7d2fe; margin-left: 4px; }
+.badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.badge.ok { background: #f0fdf4; color: var(--success); border: 1px solid #bbf7d0; }
+.badge.warn { background: #fef2f2; color: var(--error); border: 1px solid #fecaca; }
+
+.form-foot { margin-top: 16px; text-align: center; font-size: 13px; color: var(--muted); }
+.form-foot a { color: var(--primary); text-decoration: none; }
+.form-foot a:hover { text-decoration: underline; }
+
+/* ---------- 数据表格 / 行内操作 ---------- */
+table.data { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.data th, table.data td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--card-border); vertical-align: middle; }
+table.data th { color: var(--muted); font-weight: 500; white-space: nowrap; }
+table.data form { display: inline; }
+.row-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.mono { font-family: var(--mono); font-size: 13px; }
+
+/* ---------- 用户管理页 ---------- */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+table.data input[type="password"], table.data input[type="text"] {
+  width: auto; padding: 6px 10px; font-size: 13px;
+}
+
+/* ---------- 只读输入框 ---------- */
+input[readonly] { background: #f1f5f9; color: var(--muted); }
+
+/* ---------- 权限组管理 ---------- */
+.group-block { padding: 14px 0; border-bottom: 1px solid var(--card-border); }
+.group-block:last-of-type { border-bottom: none; }
+.group-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.group-head form { margin-left: auto; }
+.group-name { font-size: 15px; font-weight: 700; }
+.group-members { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.member-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 6px 3px 10px; border-radius: 999px;
+  background: #eef2ff; color: var(--primary); border: 1px solid #c7d2fe;
+  font-size: 13px; font-family: var(--mono);
+}
+.member-remove { display: inline; }
+.member-remove button {
+  display: inline-block; width: auto; margin: 0; padding: 0 6px;
+  background: transparent; color: var(--primary); font-size: 14px; line-height: 1;
+  border-radius: 50%;
+}
+.member-remove button:hover { background: #c7d2fe; }
+
+/* ---------- 弹框内下拉框 ---------- */
+.modal-select {
+  width: 100%; padding: 10px 12px; border-radius: 8px;
+  border: 1px solid #cbd5e1; background: #fff; color: var(--text);
+  font-size: 14px; outline: none; margin-top: 5px;
+}
+.modal-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, .12); }
+
+/* ---------- 卡片标题栏 / 弹框 ---------- */
+.card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.card-head h2 { margin-bottom: 0; }
+
+.modal-mask {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(15, 23, 42, .45);
+  display: none; align-items: flex-start; justify-content: center;
+  padding-top: 10vh;
+}
+.modal-mask.show { display: flex; }
+.modal {
+  width: 520px; max-width: calc(100vw - 32px);
+  background: var(--card); border-radius: 14px; padding: 24px;
+  box-shadow: 0 24px 64px rgba(15, 23, 42, .3);
+  animation: modal-in .15s ease-out;
+}
+@keyframes modal-in {
+  from { transform: translateY(-8px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.modal-head h2 { margin-bottom: 0; }
+
+.popup-close {
+  display: inline-block; width: 28px; height: 28px; margin: 0; padding: 0;
+  background: #f1f5f9; color: var(--muted); border: none; border-radius: 8px;
+  font-size: 16px; line-height: 1; cursor: pointer; transition: all .15s;
+}
+.popup-close:hover { background: #fee2e2; color: var(--error); }
+
+/* ---------- 确认弹框 ---------- */
+.modal-sm { width: 420px; }
+.confirm-actions { display: flex; gap: 10px; margin-top: 18px; }
+.confirm-actions button { margin-top: 0; }
+.btn-cancel {
+  background: #f1f5f9; color: var(--text); border: 1px solid var(--card-border);
+}
+.btn-cancel:hover { background: #e2e8f0; }
+.btn-confirm-danger { background: var(--error); }
+.btn-confirm-danger:hover { background: #b91c1c; }

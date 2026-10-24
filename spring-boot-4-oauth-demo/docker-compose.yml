@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: oauth-demo-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: oauthdb
+      POSTGRES_USER: oauth
+      POSTGRES_PASSWORD: oauth123
+      TZ: Asia/Shanghai
+    ports:
+      # host already runs a local PostgreSQL on 5432; expose ours on 5433
+      - "5433:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U oauth -d oauthdb"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  postgres-data:

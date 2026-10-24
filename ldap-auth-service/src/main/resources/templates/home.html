@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>首页 · LDAP Auth Service</title>
+<link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+  <div class="navbar">
+    <div class="navbar-inner">
+      <a class="brand" th:href="@{/}">🔐 LDAP Auth Service</a>
+      <div class="nav">
+        <a th:href="@{/}" class="active">首页</a>
+        <a th:href="@{/admin/users}" th:if="${isAdmin}">用户管理</a>
+        <a th:href="@{/admin/groups}" th:if="${isAdmin}">权限组管理</a>
+      </div>
+      <div class="nav-right">
+        <span th:text="${username}">user</span>
+        <form th:action="@{/logout}" method="post">
+          <button type="submit">退出登录</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="container narrow">
+    <div class="card">
+      <h2>👤 当前登录用户</h2>
+
+      <div class="kv">
+        <span class="k">用户名</span>
+        <span class="v" th:text="${username}">user</span>
+      </div>
+      <div class="kv" th:if="${!#strings.isEmpty(lastName) or !#strings.isEmpty(firstName)}">
+        <span class="k">姓名</span>
+        <span class="v" th:text="${lastName + firstName}">胡瑞</span>
+      </div>
+      <div class="kv" th:if="${!#strings.isEmpty(email)}">
+        <span class="k">邮箱</span>
+        <span class="v" th:text="${email}">user@example.com</span>
+      </div>
+      <div class="kv">
+        <span class="k">角色</span>
+        <span class="v">
+          <span th:if="${#lists.isEmpty(authorities)}" class="muted">（未分配角色）</span>
+          <span th:each="role : ${authorities}" class="role-tag" th:text="${role.authority}">ROLE_USER</span>
+        </span>
+      </div>
+      <div class="kv">
+        <span class="k">认证方式</span>
+        <span class="v">LDAP 目录验证</span>
+      </div>
+    </div>
+
+    <div class="form-foot" th:if="${isAdmin}">你是管理员，可进入 <a th:href="@{/admin/users}">用户管理</a> 或 <a th:href="@{/admin/groups}">权限组管理</a></div>
+  </div>
+</body>
+</html>

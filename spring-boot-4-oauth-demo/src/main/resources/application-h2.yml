@@ -1,0 +1,17 @@
+# Fallback profile for running without Docker/PostgreSQL:
+#   mvn spring-boot:run -Dspring-boot.run.profiles=h2
+spring:
+  datasource:
+    url: jdbc:h2:mem:oauthdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  sql:
+    init:
+      mode: always
+      schema-locations:
+        # schema files shipped inside spring-security-oauth2-authorization-server (H2 dialect)
+        - classpath:org/springframework/security/oauth2/server/authorization/oauth2-authorization-schema.sql
+        - classpath:org/springframework/security/oauth2/server/authorization/oauth2-authorization-consent-schema.sql
+        - classpath:org/springframework/security/oauth2/server/authorization/client/oauth2-registered-client-schema.sql
+        - classpath:app-schema.sql

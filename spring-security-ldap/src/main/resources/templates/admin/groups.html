@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>权限组管理 · Spring Security LDAP</title>
+<link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+  <div class="navbar">
+    <div class="navbar-inner">
+      <a class="brand" th:href="@{/}">📂 Spring Security LDAP</a>
+      <div class="nav">
+        <a th:href="@{/}">首页</a>
+        <a th:href="@{/secure}">受保护页</a>
+        <a th:href="@{/password}" th:if="${username != 'anonymous'}">修改密码</a>
+        <a th:href="@{/admin/groups}" class="active" th:if="${userroles.contains('ROLE_ADMIN')}">权限组管理</a>
+      </div>
+      <div class="nav-right" th:if="${username != 'anonymous'}">
+        <span th:text="${username}">admin</span>
+        <form th:action="@{/logout}" method="post" style="margin:0">
+          <button type="submit" class="inline danger">退出</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <h2>🛡️ 权限组管理</h2>
+
+      <div class="msg ok" th:if="${ok}" th:text="${ok}"></div>
+      <div class="msg err" th:if="${err}" th:text="${err}"></div>
+
+      <form th:action="@{/admin/export-ldif}" method="post" style="margin-bottom: 14px;">
+        <button type="submit" class="inline">💾 固化到 users.ldif（重启不丢）</button>
+      </form>
+
+      <table class="data">
+        <thead>
+          <tr><th>用户名</th><th>角色</th><th>操作</th></tr>
+        </thead>
+        <tbody>
+          <tr th:each="u : ${users}">
+            <td class="mono" th:text="${u.username}">baeldung</td>
+            <td>
+              <span class="role-tag" th:if="${u.admin}">ROLE_ADMIN</span>
+              <span class="role-tag" th:if="${u.user}">ROLE_USER</span>
+              <span class="muted" th:if="${!u.admin and !u.user}">（无角色）</span>
+            </td>
+            <td class="row-actions">
+              <span class="badge ok" th:if="${u.username == 'admin'}">内置超级管理员</span>
+              <form th:action="@{/admin/groups/grant}" method="post" th:if="${!u.admin and u.username != 'admin'}">
+                <input type="hidden" name="username" th:value="${u.username}">
+                <button type="submit" class="inline">授予管理员</button>
+              </form>
+              <form th:action="@{/admin/groups/revoke}" method="post" th:if="${u.admin and u.username != 'admin'}">
+                <input type="hidden" name="username" th:value="${u.username}">
+                <button type="submit" class="inline danger">收回管理员</button>
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="muted" style="margin-top: 14px;">
+        💡 角色来自 LDAP 组成员关系：DN 在 <span class="mono">cn=admin,ou=groups</span> 的 member 列表里即为管理员。
+        修改实时生效（对方下一次请求即变化），无需重启。不能收回自己的权限，且至少保留一名管理员。
+      </p>
+    </div>
+  </div>
+</body>
+</html>

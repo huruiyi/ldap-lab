@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>权限组管理 · LDAP Auth Service</title>
+<link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+  <div class="navbar">
+    <div class="navbar-inner">
+      <a class="brand" th:href="@{/}">🔐 LDAP Auth Service</a>
+      <div class="nav">
+        <a th:href="@{/}">首页</a>
+        <a th:href="@{/admin/users}">用户管理</a>
+        <a th:href="@{/admin/groups}" class="active">权限组管理</a>
+      </div>
+      <div class="nav-right">
+        <form th:action="@{/logout}" method="post">
+          <button type="submit">退出登录</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <h2>🛡️ 管理员授权</h2>
+      <p class="muted" style="margin-bottom:14px">授予/收回管理员权限，对在线用户下一次请求即生效，无需重新登录</p>
+
+      <div class="msg ok" th:if="${ok}" th:text="${ok}"></div>
+      <div class="msg err" th:if="${err}" th:text="${err}"></div>
+
+      <table class="data">
+        <thead>
+          <tr>
+            <th>用户名</th>
+            <th>角色</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="user : ${users}">
+            <td class="mono" th:text="${user.username}">admin</td>
+            <td>
+              <span class="badge warn" th:if="${user.admin}">ADMIN</span>
+              <span class="badge ok">USER</span>
+            </td>
+            <td>
+              <div class="row-actions">
+                <form th:if="${!user.admin}" th:action="@{/admin/groups/grant}" method="post">
+                  <input type="hidden" name="username" th:value="${user.username}" />
+                  <button type="submit" class="inline">授予管理员</button>
+                </form>
+                <form th:if="${user.admin and user.username != 'admin'}" th:action="@{/admin/groups/revoke}" method="post">
+                  <input type="hidden" name="username" th:value="${user.username}" />
+                  <button type="submit" class="inline danger">收回管理员</button>
+                </form>
+                <span th:if="${user.username == 'admin'}" class="muted">超级管理员</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <div class="card-head">
+        <h2>👥 权限组</h2>
+        <button type="button" class="inline" data-modal="createGroupModal">＋ 新建权限组</button>
+      </div>
+      <p class="muted" style="margin-bottom:14px">组 cn 大写加 <code>ROLE_</code> 前缀即为角色名，成员变更实时生效</p>
+
+      <div class="group-block" th:each="group : ${groups}">
+        <div class="group-head">
+          <span class="group-name mono" th:text="${group.cn}">admin</span>
+          <span class="role-tag" th:text="${group.role}">ROLE_ADMIN</span>
+          <span class="badge ok" th:if="${group.builtin}">内置</span>
+          <div class="row-actions" style="margin-left:auto">
+            <button type="button" class="inline" th:data-modal="${'addMemberModal-' + group.cn}">＋ 添加成员</button>
+            <button type="button" class="inline danger" th:if="${!group.builtin}"
+                    th:data-modal="${'deleteGroupModal-' + group.cn}">删除组</button>
+          </div>
+        </div>
+        <div class="group-members">
+          <span class="member-tag" th:each="member : ${group.members}">
+            <span th:text="${member}">admin</span>
+            <form th:action="@{/admin/groups/remove-member}" method="post" class="member-remove">
+              <input type="hidden" name="cn" th:value="${group.cn}" />
+              <input type="hidden" name="username" th:value="${member}" />
+              <button type="submit" title="移出该组">×</button>
+            </form>
+          </span>
+          <span class="muted" th:if="${#lists.isEmpty(group.members)}">（暂无成员）</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <h2>💾 数据固化</h2>
+      <p class="muted">内嵌 LDAP 数据在内存中，重启后丢失。点击下面按钮把当前用户和组变更保存到 <code>data/ldap.ldif</code>（重启自动加载）和 <code>src/main/resources/ldap.ldif</code>（随源码保存）。</p>
+      <form th:action="@{/admin/export-ldif}" method="post">
+        <button type="submit">固化数据</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 新建权限组弹框 -->
+  <div class="modal-mask" id="createGroupModal">
+    <div class="modal">
+      <div class="modal-head">
+        <h2>👥 新建权限组</h2>
+        <button type="button" class="popup-close" data-close="createGroupModal">×</button>
+      </div>
+      <p class="muted" style="margin-bottom:4px">创建后你将自动成为该组首个成员；组名即角色来源（如 <code>devops</code> → <code>ROLE_DEVOPS</code>）</p>
+      <form th:action="@{/admin/groups/create}" method="post">
+        <label>组名 *（字母 / 数字 / 中划线 / 下划线）</label>
+        <input type="text" name="cn" required pattern="[a-zA-Z0-9_-]{1,32}" placeholder="例如 devops" />
+        <button type="submit">创建权限组</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 每个组一个添加成员弹框 -->
+  <div class="modal-mask" th:each="group : ${groups}" th:id="${'addMemberModal-' + group.cn}">
+    <div class="modal">
+      <div class="modal-head">
+        <h2>＋ 添加成员：<span class="mono" th:text="${group.cn}">admin</span></h2>
+        <button type="button" class="popup-close" th:data-close="${'addMemberModal-' + group.cn}">×</button>
+      </div>
+      <form th:action="@{/admin/groups/add-member}" method="post">
+        <input type="hidden" name="cn" th:value="${group.cn}" />
+        <label>选择用户</label>
+        <select name="username" required class="modal-select">
+          <option value="" disabled selected>选择用户…</option>
+          <option th:each="u : ${allUsers}" th:value="${u.username}"
+                  th:text="${u.username} + (${#strings.isEmpty(u.fullName) ? '未设置姓名' : u.fullName})"></option>
+        </select>
+        <button type="submit">添加</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 每个非内置组一个删除确认弹框 -->
+  <div class="modal-mask" th:each="group : ${groups}" th:if="${!group.builtin}"
+       th:id="${'deleteGroupModal-' + group.cn}">
+    <div class="modal modal-sm">
+      <div class="modal-head">
+        <h2>🗑️ 删除权限组</h2>
+        <button type="button" class="popup-close" th:data-close="${'deleteGroupModal-' + group.cn}">×</button>
+      </div>
+      <p class="muted" style="margin-bottom:6px">
+        确认删除权限组 <span class="mono" th:text="${group.cn}">devops</span>？<br>
+        组内成员将失去对应的 <span class="mono" th:text="${group.role}">ROLE_X</span> 角色，且<strong>不可恢复</strong>。
+      </p>
+      <form th:action="@{/admin/groups/delete}" method="post" class="confirm-actions">
+        <input type="hidden" name="cn" th:value="${group.cn}" />
+        <button type="button" class="btn-cancel" th:data-close="${'deleteGroupModal-' + group.cn}">取消</button>
+        <button type="submit" class="btn-confirm-danger">确认删除</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function openModal(id) { document.getElementById(id).classList.add('show'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+    document.querySelectorAll('[data-modal]').forEach(function (btn) {
+      btn.addEventListener('click', function () { openModal(btn.dataset.modal); });
+    });
+    document.querySelectorAll('[data-close]').forEach(function (btn) {
+      btn.addEventListener('click', function () { closeModal(btn.dataset.close); });
+    });
+    document.querySelectorAll('.modal-mask').forEach(function (mask) {
+      mask.addEventListener('click', function (e) {
+        if (e.target === mask) mask.classList.remove('show');
+      });
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-mask.show').forEach(function (m) { m.classList.remove('show'); });
+      }
+    });
+  </script>
+</body>
+</html>

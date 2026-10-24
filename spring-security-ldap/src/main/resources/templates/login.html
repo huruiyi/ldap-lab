@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>登录 · Spring Security LDAP</title>
+<link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+  <div class="navbar">
+    <div class="navbar-inner">
+      <a class="brand" th:href="@{/}">📂 Spring Security LDAP</a>
+      <div class="nav">
+        <a th:href="@{/}">首页</a>
+        <a th:href="@{/secure}">受保护页</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container narrow">
+    <div class="card">
+      <h2>🔐 LDAP 账号登录</h2>
+
+      <div class="msg ok" th:if="${param.logout}">✅ 你已退出登录</div>
+      <div class="msg ok" th:if="${param.registered}">✅ 注册成功，请登录</div>
+      <div class="msg err" th:if="${param.error}">❌ 用户名或密码错误，请重试</div>
+
+      <form th:action="@{/login}" method="POST">
+        <label for="username">用户名</label>
+        <input id="username" type="text" name="username" value="baeldung" required autofocus />
+        <label for="password">密码</label>
+        <input id="password" type="password" name="password" value="password" required />
+        <input type="submit" value="登 录" />
+      </form>
+    </div>
+
+    <div class="form-foot">示例账号（来自 users.ldif）：<code>baeldung / password</code> · 没有账号？<a th:href="@{/register}">立即注册</a></div>
+  </div>
+</body>
+</html>

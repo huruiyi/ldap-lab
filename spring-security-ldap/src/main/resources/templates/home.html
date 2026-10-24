@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title th:text="${title}">Spring Security LDAP</title>
+<link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+  <div class="navbar">
+    <div class="navbar-inner">
+      <a class="brand" th:href="@{/}">📂 Spring Security LDAP</a>
+      <div class="nav">
+        <a th:href="@{/}" th:classappend="${title == 'PUBLIC AREA'} ? 'active'">首页</a>
+        <a th:href="@{/secure}" th:classappend="${title == 'SECURE AREA'} ? 'active'">受保护页</a>
+        <a th:href="@{/password}" th:if="${username != 'anonymous'}">修改密码</a>
+        <a th:href="@{/admin/groups}" th:if="${userroles.contains('ROLE_ADMIN')}">权限组管理</a>
+      </div>
+      <div class="nav-right" th:if="${username != 'anonymous'}">
+        <span th:text="${username}">baeldung</span>
+        <form th:action="@{/logout}" method="post" style="margin:0">
+          <button type="submit" class="inline danger">退出</button>
+        </form>
+      </div>
+      <div class="nav-right" th:if="${username == 'anonymous'}">
+        <a th:href="@{/login}" style="color: var(--primary); text-decoration: none;">登录</a>
+        <a th:href="@{/register}" style="color: var(--primary); text-decoration: none;">注册</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <h2 th:text="${title}">PUBLIC AREA</h2>
+      <p class="muted" th:text="${message}">Any user can view this page</p>
+
+      <div style="margin-top: 18px;">
+        <div class="kv">
+          <span class="k">当前用户</span>
+          <span class="v" th:text="${username}">anonymous</span>
+        </div>
+        <div class="kv">
+          <span class="k">角色</span>
+          <span class="v">
+            <span class="role-tag" th:each="r : ${userroles}" th:text="${r}">ROLE_USER</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-foot">
+      用户与权限数据来自内嵌 LDAP（UnboundID，端口 18889），启动时由 <code>users.ldif</code> 导入
+    </div>
+  </div>
+</body>
+</html>

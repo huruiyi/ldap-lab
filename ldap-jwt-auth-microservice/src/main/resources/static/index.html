@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LDAP JWT 控制台</title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <div class="shell">
+    <header class="top">
+      <div>
+        <p class="eyebrow">ldap-jwt-auth-microservice</p>
+        <h1>身份控制台</h1>
+      </div>
+      <nav class="tabs" aria-label="页面">
+        <button type="button" class="tab guest-only is-active" data-view="login">登录</button>
+        <button type="button" class="tab guest-only" data-view="register">注册</button>
+        <button type="button" class="tab" data-view="profile">资料</button>
+        <button type="button" id="logout" class="auth-only">退出</button>
+      </nav>
+    </header>
+
+    <main>
+      <section id="login" class="panel">
+        <h2>获取令牌</h2>
+        <p class="hint">使用登录名和密码。注册会把登录名、姓名和邮箱写入 LDAP。</p>
+        <form id="login-form">
+          <label>登录名<input name="username" autocomplete="username" required value="demo"></label>
+          <label>密码<input name="password" type="password" autocomplete="current-password" required value="demo123"></label>
+          <button type="submit">登录</button>
+        </form>
+      </section>
+
+      <section id="register" class="panel" hidden>
+        <h2>注册本地用户</h2>
+        <p class="hint">这些信息会写入 LDAP：登录名、密码、姓、名、姓名、邮箱。</p>
+        <form id="register-form">
+          <label>登录名<input name="username" autocomplete="username" required placeholder="zhangsan"></label>
+          <label>密码<input name="password" type="password" autocomplete="new-password" required></label>
+          <div class="name-row">
+            <label>姓<input name="lastname" autocomplete="family-name" required placeholder="张"></label>
+            <label>名<input name="firstname" autocomplete="given-name" required placeholder="三"></label>
+          </div>
+          <label>姓名<input name="cn" autocomplete="name" required placeholder="张三"></label>
+          <label>邮箱<input name="email" type="email" autocomplete="email" required placeholder="zhangsan@xl.com"></label>
+          <button type="submit">注册</button>
+        </form>
+      </section>
+
+      <section id="profile" class="panel" hidden>
+        <h2>当前用户</h2>
+        <p class="hint">使用登录后保存在本次会话中的 Bearer Token 调用 <code>/identity/profile</code>。</p>
+        <div class="row">
+          <button type="button" id="load-profile">刷新资料</button>
+        </div>
+        <dl id="profile-card" class="card" hidden>
+          <div><dt>登录名</dt><dd data-field="uid"></dd></div>
+          <div><dt>姓</dt><dd data-field="sn"></dd></div>
+          <div><dt>名</dt><dd data-field="givenName"></dd></div>
+          <div><dt>姓名</dt><dd data-field="cn"></dd></div>
+          <div><dt>邮箱</dt><dd data-field="mail"></dd></div>
+        </dl>
+      </section>
+
+      <section class="result" aria-live="polite">
+        <div class="result-head">
+          <h2>响应</h2>
+          <span id="token-state">未登录</span>
+        </div>
+        <pre id="output">等待操作。</pre>
+      </section>
+    </main>
+  </div>
+  <script src="/js/app.js"></script>
+</body>
+</html>

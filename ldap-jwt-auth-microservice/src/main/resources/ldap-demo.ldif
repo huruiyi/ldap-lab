@@ -1,0 +1,30 @@
+dn: dc=xl,dc=com
+objectClass: top
+objectClass: domain
+dc: xl
+
+dn: ou=users,dc=xl,dc=com
+objectClass: organizationalUnit
+ou: users
+
+dn: cn=demo,ou=users,dc=xl,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: demo
+sn: Demo
+uid: demo
+userPassword: demo123
+
+dn: uid=zhangsan,ou=users,dc=xl,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+uid: zhangsan
+cn: 张三
+sn: zhang
+givenName: san
+mail: zhangsan@xx.com
+userPassword: zhangsan

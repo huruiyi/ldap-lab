@@ -1,0 +1,253 @@
+:root {
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --bg: #f1f5f9;
+  --card: #ffffff;
+  --text: #1e293b;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  --danger: #dc2626;
+  --success: #16a34a;
+  --radius: 10px;
+  --shadow: 0 4px 24px rgba(15, 23, 42, .08);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ===== 认证页（登录/注册） ===== */
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 55%, #eef2ff 100%);
+}
+
+.auth-card {
+  background: var(--card);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.auth-card .logo {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+
+.auth-card h1 {
+  font-size: 22px;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.auth-card .subtitle {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-bottom: 28px;
+}
+
+.form-group { margin-bottom: 18px; }
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.form-group input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  transition: border-color .15s, box-shadow .15s;
+  background: #fff;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+}
+
+.btn {
+  display: inline-block;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--primary);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s;
+}
+
+.btn:hover { background: var(--primary-hover); }
+.btn:disabled { opacity: .6; cursor: not-allowed; }
+
+.auth-link {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.auth-link a { color: var(--primary); text-decoration: none; font-weight: 600; }
+.auth-link a:hover { text-decoration: underline; }
+
+.message {
+  display: none;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  margin-bottom: 18px;
+}
+
+.message.error { display: block; background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; }
+.message.success { display: block; background: #f0fdf4; color: var(--success); border: 1px solid #bbf7d0; }
+
+/* ===== 主页（控制台） ===== */
+.navbar {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.navbar .brand { font-size: 17px; font-weight: 700; }
+.navbar .brand span { color: var(--primary); }
+
+.navbar .user-area { display: flex; align-items: center; gap: 14px; font-size: 14px; }
+
+.navbar .badge {
+  background: #eff6ff;
+  color: var(--primary);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.btn-sm {
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.btn-sm:hover { border-color: var(--primary); color: var(--primary); }
+.btn-sm.danger:hover { border-color: var(--danger); color: var(--danger); }
+
+.container { max-width: 960px; margin: 32px auto; padding: 0 24px; }
+
+.panel {
+  background: var(--card);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 28px;
+  margin-bottom: 24px;
+}
+
+.panel h2 { font-size: 17px; margin-bottom: 4px; }
+.panel .desc { color: var(--text-muted); font-size: 13px; margin-bottom: 20px; }
+
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+
+th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--border); }
+th { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+tr:last-child td { border-bottom: none; }
+
+.token-box {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  font-family: Consolas, monospace;
+  font-size: 12px;
+  word-break: break-all;
+  color: var(--text-muted);
+  max-height: 90px;
+  overflow: auto;
+}
+
+.empty { color: var(--text-muted); font-size: 14px; padding: 12px 0; }
+
+/* ===== 角色徽章（可点击授权/撤权） ===== */
+.role-cell { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.role-chip {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px dashed var(--border);
+  color: var(--text-muted);
+  background: #fff;
+  user-select: none;
+  transition: all .15s;
+}
+
+.role-chip:hover { border-color: var(--primary); color: var(--primary); }
+
+.role-chip.active {
+  border: 1px solid transparent;
+  background: #eff6ff;
+  color: var(--primary);
+}
+
+.role-chip.active:hover { background: #fef2f2; color: var(--danger); border-color: #fecaca; }
+
+/* ===== 弹窗 ===== */
+.modal-mask {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, .45);
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-mask.show { display: flex; }
+
+.modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 30px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: var(--shadow);
+}
+
+.modal h3 { font-size: 17px; margin-bottom: 20px; }
+.modal .actions { display: flex; gap: 10px; margin-top: 22px; }
+.modal .actions .btn { flex: 1; }
+.modal .actions .btn-sm { flex: 1; padding: 12px; text-align: center; }

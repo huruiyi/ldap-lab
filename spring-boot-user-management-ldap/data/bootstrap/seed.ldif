@@ -1,0 +1,52 @@
+# 种子数据：首次启动（LDAP 数据库为空）时由 osixia/openldap 自动导入
+# 通过 docker-compose 的 LDAP_SEED_INTERNAL_LDIF_PATH=/seed/seed.ldif 接入
+# 注意：本项目的登录是 Java 侧读取 userPassword 做 BCrypt 比对（非 LDAP bind），
+# 所以 userPassword 存的是明文「admin123」的 BCrypt 哈希字符串本身，不能加 {CRYPT} 前缀
+
+dn: ou=users,dc=springframework,dc=org
+objectClass: organizationalUnit
+objectClass: top
+ou: users
+
+dn: ou=roles,dc=springframework,dc=org
+objectClass: organizationalUnit
+objectClass: top
+ou: roles
+
+dn: uid=admin,ou=users,dc=springframework,dc=org
+objectClass: top
+objectClass: inetOrgPerson
+objectClass: person
+objectClass: organizationalPerson
+uid: admin
+cn: Admin
+sn: Admin
+userPassword:: JDJiJDEwJHlFTFFGOWhndmlFMjVQWkVySXBmWC5QYkJRbDdNbE43RndBclZOeEZWM1VCRVM0UDU4bnhH
+o: ROLE_ADMIN
+o: ROLE_CREATOR
+o: ROLE_UPDATER
+o: ROLE_DELETER
+
+dn: cn=ROLE_ADMIN,ou=roles,dc=springframework,dc=org
+objectClass: groupOfNames
+objectClass: top
+cn: ROLE_ADMIN
+member: uid=admin,ou=users,dc=springframework,dc=org
+
+dn: cn=ROLE_CREATOR,ou=roles,dc=springframework,dc=org
+objectClass: groupOfNames
+objectClass: top
+cn: ROLE_CREATOR
+member: uid=admin,ou=users,dc=springframework,dc=org
+
+dn: cn=ROLE_UPDATER,ou=roles,dc=springframework,dc=org
+objectClass: groupOfNames
+objectClass: top
+cn: ROLE_UPDATER
+member: uid=admin,ou=users,dc=springframework,dc=org
+
+dn: cn=ROLE_DELETER,ou=roles,dc=springframework,dc=org
+objectClass: groupOfNames
+objectClass: top
+cn: ROLE_DELETER
+member: uid=admin,ou=users,dc=springframework,dc=org

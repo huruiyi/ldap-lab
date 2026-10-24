@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>注册 · Spring Security LDAP</title>
+<link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+  <div class="navbar">
+    <div class="navbar-inner">
+      <a class="brand" th:href="@{/}">📂 Spring Security LDAP</a>
+      <div class="nav">
+        <a th:href="@{/}">首页</a>
+        <a th:href="@{/login}">登录</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container narrow">
+    <div class="card">
+      <h2>📝 注册新账号</h2>
+
+      <div class="msg err" th:if="${err}" th:text="${err}"></div>
+
+      <form th:action="@{/register}" method="POST">
+        <label for="username">用户名 *</label>
+        <input id="username" type="text" name="username" required autofocus />
+        <label for="password">密码 *（至少 4 位）</label>
+        <input id="password" type="password" name="password" minlength="4" required />
+        <label for="confirm-password">确认密码 *</label>
+        <input id="confirm-password" type="password" name="confirmPassword" minlength="4" required />
+        <label for="fullName">姓名（cn，选填）</label>
+        <input id="fullName" type="text" name="fullName" />
+        <label for="lastName">姓（sn，选填）</label>
+        <input id="lastName" type="text" name="lastName" />
+        <label for="email">邮箱（选填）</label>
+        <input id="email" type="email" name="email" />
+        <input type="submit" value="注 册" />
+      </form>
+    </div>
+
+    <div class="form-foot">已有账号？<a th:href="@{/login}">去登录</a></div>
+  </div>
+</body>
+</html>

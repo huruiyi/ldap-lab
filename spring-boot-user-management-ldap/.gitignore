@@ -1,0 +1,26 @@
+# ===== Java / Maven =====
+target/
+*.class
+*.jar
+*.war
+
+# ===== IDE =====
+.idea/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+.vscode/
+
+# ===== 日志 =====
+*.log
+
+# ===== 运行时数据（容器生成，不入库） =====
+# OpenLDAP 数据库与配置（含管理员密码标记文件）
+data/slapd/
+# TLS 证书与私钥（容器首次启动自动生成）
+data/certificates/
+
+# 注意：data/bootstrap/seed.ldif 是种子数据源文件，需要提交

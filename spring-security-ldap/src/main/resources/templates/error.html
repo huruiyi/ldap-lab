@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>出错了 · Spring Security LDAP</title>
+<link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+  <div class="navbar">
+    <div class="navbar-inner">
+      <a class="brand" th:href="@{/}">📂 Spring Security LDAP</a>
+      <div class="nav">
+        <a th:href="@{/}">首页</a>
+        <a th:href="@{/secure}">受保护页</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container narrow">
+    <div class="card">
+      <h2>⚠️ 出错了</h2>
+      <div class="kv"><span class="k">状态码</span><span class="v" th:text="${status}">500</span></div>
+      <div class="kv"><span class="k">错误类型</span><span class="v" th:text="${error}">Error</span></div>
+      <div class="kv"><span class="k">详情</span><span class="v" th:text="${message}">-</span></div>
+      <a class="btn" th:href="@{/}">返回首页</a>
+    </div>
+  </div>
+</body>
+</html>
